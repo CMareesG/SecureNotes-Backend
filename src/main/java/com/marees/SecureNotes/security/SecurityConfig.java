@@ -58,38 +58,36 @@ public class SecurityConfig {
         return new AuthTokenFilter();
     }
 
-    @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf ->
-                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/auth/public/**")
-        );
-        //http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests((requests)
-                -> requests
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/csrf-token").permitAll()
-                .requestMatchers("/api/auth/public/**").permitAll()
-                .requestMatchers("/api/auth/public/signin").permitAll()
-                .requestMatchers("/api/auth/public/forget-password").permitAll()
-                .requestMatchers("/api/auth/public/reset-password").permitAll()
-                .requestMatchers("/oauth2/**").permitAll()
-                .anyRequest().authenticated())
-                .oauth2Login(oauth2 -> {
-                    oauth2.successHandler(oAuth2LoginSuccessHandler);
-                });
+   @Bean
+SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    CookieCsrfTokenRepository csrfRepo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+    csrfRepo.setSecure(false); // 👈 disables "Secure" flag (only for dev with http frontend)
 
-        http.exceptionHandling(exception
-                -> exception.authenticationEntryPoint(unauthorizedHandler));
-        http.addFilterBefore(authenticationJwtTokenFilter(),
-                UsernamePasswordAuthenticationFilter.class);
-        http.cors(
-                cors -> cors.configurationSource(corsConfigurationSource())
-        );
-        http.formLogin(withDefaults());
-        http.httpBasic(withDefaults());
-        return http.build();
-    }
+    http.csrf(csrf ->
+            csrf.csrfTokenRepository(csrfRepo)
+                .ignoringRequestMatchers("/api/auth/public/**")
+    );
+
+    http.authorizeHttpRequests((requests) -> requests
+            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            .requestMatchers("/api/csrf-token").permitAll()
+            .requestMatchers("/api/auth/public/**").permitAll()
+            .requestMatchers("/api/auth/public/signin").permitAll()
+            .requestMatchers("/api/auth/public/forget-password").permitAll()
+            .requestMatchers("/api/auth/public/reset-password").permitAll()
+            .requestMatchers("/oauth2/**").permitAll()
+            .anyRequest().authenticated())
+        .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2LoginSuccessHandler));
+
+    http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
+    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+    http.formLogin(withDefaults());
+    http.httpBasic(withDefaults());
+
+    return http.build();
+}
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
