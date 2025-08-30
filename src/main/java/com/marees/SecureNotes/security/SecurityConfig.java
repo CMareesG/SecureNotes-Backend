@@ -93,7 +93,7 @@ SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Excepti
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         // Allow specific origins
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://secure-notes-seven.vercel.app/"));
 
         // Allow specific HTTP methods
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
