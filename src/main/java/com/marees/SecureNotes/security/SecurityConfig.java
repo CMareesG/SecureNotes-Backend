@@ -69,6 +69,7 @@ SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Excepti
     );
 
     http.authorizeHttpRequests((requests) -> requests
+            .requestMatchers("/", "/index.html", "/static/**", "/css/**", "/js/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/csrf-token").permitAll()
             .requestMatchers("/api/auth/public/**").permitAll()
