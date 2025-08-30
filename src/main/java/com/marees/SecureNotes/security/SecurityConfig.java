@@ -97,7 +97,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:3000", 
-            "https://secure-notes-seven.vercel.app/" // ✅ allow Vercel frontend
+            "https://secure-notes-seven.vercel.app/", // ✅ allow Vercel frontend,
+            "https://secure-notes.mareeswaraganapathy.me/"
         ));
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
